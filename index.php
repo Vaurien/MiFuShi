@@ -1,4 +1,58 @@
 <?php
+require 'facebook.php';
+
+$facebook = new Facebook(array(
+  'appId'  => '147994818628846',
+  'secret' => '660e0a573695098486b6216e8e4a86df',
+));
+
+$user = $facebook->getUser();
+
+
+
+if ($user) {
+  try {
+    $user_profile = $facebook->api('/me');
+  } catch (FacebookApiException $e) {
+    error_log($e);
+    $user = null;
+  }
+}
+
+if (!$user) {
+  $loginUrl = $facebook->getLoginUrl();
+}
+
+
+?>
+<!doctype html>
+<html>
+  <head>
+    <title>Index MiFuShi</title>
+
+  </head>
+  <body>
+   
+
+    <?php if (!$user): ?>
+      <div>
+        <a href="<?php echo $loginUrl; ?>">Login with Facebook</a>
+      </div>
+    <?php endif ?>
+
+    <?php if ($user): ?>
+      <h3>You</h3>
+      <img src="https://graph.facebook.com/<?php echo $user; ?>/picture">
+
+      <h3>Your User Object (/me)</h3>
+      <pre><?php print_r($user_profile); ?></pre>
+    <?php endif ?>
+
+
+
+	
+
+<?php
 require 'openid.php';
 try {
     $openid = new LightOpenID('mifushi.olympe-network.com');
@@ -32,3 +86,5 @@ try {
 } catch(ErrorException $e) {
     echo $e->getMessage();
 }
+?>
+</body>
